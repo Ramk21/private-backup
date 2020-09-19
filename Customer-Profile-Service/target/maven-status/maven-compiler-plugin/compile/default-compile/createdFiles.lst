@@ -1,0 +1,9 @@
+com\privateBaking\CustomerProfileService\Controller\CustomerProfileController.class
+com\privateBaking\CustomerProfileService\Model\CustomerStatus.class
+com\privateBaking\CustomerProfileService\Model\CustomerStatusResponse.class
+com\privateBaking\CustomerProfileService\Repository\CustomerProfileRepository.class
+com\privateBaking\CustomerProfileService\Model\CustomerProfile.class
+com\privateBaking\CustomerProfileService\Model\CustomerInfoDTO.class
+com\privateBaking\CustomerProfileService\SwaggerConfig.class
+com\privateBaking\CustomerProfileService\Model\DiligenceService.class
+com\privateBaking\CustomerProfileService\CustomerProfileServiceApplication.class

@@ -14,12 +14,14 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.privateBaking.CustomerDueDiligenceService.Model.CustomerConfiguration;
 import com.privateBaking.CustomerDueDiligenceService.Model.CustomerDueDiligence;
 import com.privateBaking.CustomerDueDiligenceService.Repository.CustomerDueDiligenceRepository;
-//import com.privateBaking.CustomerProfileService.Controller.CustomerProfileController;
+
 
 @RestController
 @EnableHystrix
 public class CustomerDueDiligenceController {
 	private static final Logger logger = LoggerFactory.getLogger(CustomerDueDiligenceController.class);
+	
+
 	
 	@Autowired
 	CustomerDueDiligenceRepository customerDueDiligenceRepository;
@@ -32,25 +34,62 @@ public class CustomerDueDiligenceController {
 
 	@GetMapping("customer/{customerId}/getStatus")
 	public CustomerDueDiligence getDiligenceStatus(@PathVariable  Long customerId) {
-		logger.info("CustomerDueDiligence calling get method...");
+		CustomerDueDiligence diligence = new CustomerDueDiligence();
+
+		logger.info("CustomerDueDiligence calling getDiligenceStatus method...");
 		Optional<CustomerDueDiligence> diligenceOptional = customerDueDiligenceRepository.findById(customerId);
-		CustomerDueDiligence diligence = diligenceOptional.get();
-		return diligence;
+		 if(diligenceOptional.isPresent()) { 
+		     diligence = diligenceOptional.get();		
+			 diligence.setCustomerId(customerId);
+			 diligence.setDiligenceStatus("default");
+			 customerDueDiligenceRepository.saveAndFlush(diligence);
+		
+				return diligence;
+		 }
+		 else {
+		
+			 diligence.setCustomerId(customerId);
+			 diligence.setDiligenceStatus("pending");
+			 customerDueDiligenceRepository.saveAndFlush(diligence);
+			
+				return diligence;
+		 }
+
 	}
 	
 	
-	@GetMapping(value="/customer/fault-tolerance")	
-	@HystrixCommand(fallbackMethod="fallBackMethod")
-	public CustomerDueDiligence getCustomerStatusWithFaultTolerance() {
-		throw new RuntimeException("issue happened");
-	}
+	@HystrixCommand(fallbackMethod="fallBackMethod" )
+	  @GetMapping("customer/{customerId}/v1/getDiligenceDetails") 
+	public CustomerDueDiligence getDiligenceDetails(@PathVariable Long customerId) {
+		customerDueDiligence = new CustomerDueDiligence();
+	  logger.info("CustomerDueDiligence calling version1 getDiligenceDetails  method...");
+		Optional<CustomerDueDiligence> diligenceOptional = customerDueDiligenceRepository.findById(customerId);
+		if(diligenceOptional.isPresent()) 
+			 customerDueDiligence= diligenceOptional.get();
+		return customerDueDiligence;	
+		 
+	  }
 	
-	public CustomerDueDiligence fallBackMethod() {
-		//return new Employee(444,"Ram","Kumar",null);
-//		return new CustomerDueDiligence(444,employeeConfiguration.getDefaultFirstName(),
-//				employeeConfiguration.getDefaultLastName(),null);
-		logger.info("fallBackMethod values..."+customerConfiguration.getDefaultCustomerId()
-		+"...."+customerConfiguration.getDefaultDiligenceStatus());
+	@HystrixCommand(fallbackMethod="fallBackMethod" )
+	  @GetMapping("customer/{customerId}/v2/getDiligenceDetails") 
+	public CustomerDueDiligence getDiligenceDetailsV2(@PathVariable Long customerId) {
+		customerDueDiligence = new CustomerDueDiligence();
+	  logger.info("CustomerDueDiligence calling version1 getDiligenceDetails method...");
+		Optional<CustomerDueDiligence> diligenceOptional = customerDueDiligenceRepository.findById(customerId);
+		if(diligenceOptional.isPresent()) 
+		{
+			 customerDueDiligence= diligenceOptional.get();
+			 customerDueDiligence.setDiligenceStatus("version2 Status - "+customerDueDiligence.getDiligenceStatus());
+			
+		}
+		return customerDueDiligence;	
+		 
+	  }
+	 
+		
+	
+	public CustomerDueDiligence fallBackMethod(Long id) {	
+		customerConfiguration.setDefaultCustomerId(id);
 		return new CustomerDueDiligence
 	(customerConfiguration.getDefaultCustomerId(),customerConfiguration.getDefaultDiligenceStatus()) ;
 	}

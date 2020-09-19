@@ -1,0 +1,6 @@
+projectKey=com.privateBaking:Customer-due-diligence-Service
+serverUrl=http://localhost:9000
+serverVersion=8.3.1.34397
+dashboardUrl=http://localhost:9000/dashboard?id=com.privateBaking%3ACustomer-due-diligence-Service
+ceTaskId=AXSnGbtr89g8HpN1oEOB
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AXSnGbtr89g8HpN1oEOB
